@@ -8,6 +8,8 @@ from queue import Queue
 import threading
 # Reduce busy wait
 from time import sleep
+# For serialization
+import json
 
 
 def scrape_parent_links(input_queue: Queue, site: StackOverflow, output_queue: Queue):
@@ -46,11 +48,15 @@ def scrape_child_links(input_queue: Queue, site: StackOverflow, code_io_handle, 
                 break
 
             for code in site.get_code(response):
-                code_io_handle.write(code)
+                code = {'snippet': code}
+                json.dump(code, code_io_handle)
+                # code_io_handle.write(code)
                 # print(code)
 
             for text in site.get_text(response):
-                text_io_handle.write(code)
+                text = {'snippet': text}
+                json.dump(text, text_io_handle)
+                # text_io_handle.write(text)
                 # print(text)
 
 
@@ -105,7 +111,7 @@ class StackOversight(object):
 
 
 # for debugging only
-keys = ['RGaU7lYPN8L5KbnIfkxmGQ((', 'RGaU7lYPN8L5KbnIfkxmGQ((']
+keys = ['RGaU7lYPN8L5KbnIfkxmGQ((', '1yfsxJa1AC*GlxN6RSemCQ((']
 
 python_posts = StackOverflow.create_parent_link(sort=StackOverflow.Sorts.votes.value,
                                                 order=StackOverflow.Orders.descending.value,
